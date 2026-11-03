@@ -7,83 +7,211 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #ffffff);
-            --text-color: var(--tg-theme-text-color, #000000);
-            --button-color: var(--tg-theme-button-color, #2481cc);
-            --button-text: var(--tg-theme-button-text-color, #ffffff);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
+            --bg-color: #0f172a; /* Deep space blue */
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --secondary: #8b5cf6; /* Purple */
+            --success: #10b981;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 40%);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             box-sizing: border-box;
         }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        .user-info h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .user-info p {
+            margin: 5px 0 0 0;
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+
+        /* Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
         .card {
-            background-color: var(--secondary-bg);
-            padding: 30px;
-            border-radius: 15px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px 15px;
             text-align: center;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        h1 { margin-top: 0; font-size: 24px; }
-        p { font-size: 16px; line-height: 1.5; opacity: 0.8; }
-        button {
-            background-color: var(--button-color);
-            color: var(--button-text);
-            border: none;
-            padding: 15px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 10px;
-            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            margin-top: 20px;
-            transition: opacity 0.2s;
         }
-        button:active { opacity: 0.7; }
+        .card:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .card i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .card span {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-bottom: 15px;
+        }
+        .btn:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+        .btn-channel {
+            background: #0088cc; /* Telegram Blue */
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+        }
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Spacer to push footer down */
+        .spacer {
+            flex-grow: 1;
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>🤓 Athena AI</h1>
-        <p id="greeting">Loading user data...</p>
-        <button onclick="sendData()">Test Connection</button>
+    <!-- Profile Section -->
+    <div class="profile-header">
+        <div class="avatar">🤓</div>
+        <div class="user-info">
+            <h1 id="greeting">Welcome!</h1>
+            <p id="user-id">Connecting to Athena...</p>
+        </div>
     </div>
+
+    <!-- Dashboard Grid -->
+    <div class="grid">
+        <div class="card" onclick="sendAction('chat')">
+            <i>🧠</i>
+            <span>AI Chat</span>
+        </div>
+        <div class="card" onclick="sendAction('images')">
+            <i>🎨</i>
+            <span>Image Gen</span>
+        </div>
+        <div class="card" onclick="sendAction('games')">
+            <i>🎮</i>
+            <span>Games</span>
+        </div>
+        <div class="card" onclick="sendAction('settings')">
+            <i>⚙️</i>
+            <span>Settings</span>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Action Buttons -->
+    <button class="btn btn-channel" onclick="joinChannel()">
+        📢 Join Official Channel
+    </button>
+    
+    <button class="btn btn-primary" onclick="closeApp()">
+        ✖️ Close App
+    </button>
 
     <script>
         // Initialize Telegram Web App
         const tg = window.Telegram.WebApp;
         tg.expand(); // Make it full screen
+        tg.headerColor = "#0f172a"; // Match header color
 
         // Get User Info securely
         const user = tg.initDataUnsafe?.user;
         if (user) {
-            document.getElementById("greeting").innerText = `Welcome, ${user.first_name}! You are successfully connected to the Mini App.`;
+            document.getElementById("greeting").innerText = `Hi, ${user.first_name}!`;
+            document.getElementById("user-id").innerText = `ID: ${user.id}`;
         } else {
-            document.getElementById("greeting").innerText = "Welcome! (User data not found)";
+            // This runs if you open it in a normal browser
+            document.getElementById("greeting").innerText = "Welcome to Athena!";
+            document.getElementById("user-id").innerText = "Open inside Telegram to see your profile.";
         }
 
-        // Function to send data back to the bot
-        function sendData() {
+        // Function to send data back to your Python bot
+        function sendAction(actionName) {
             const data = {
-                action: "test_connection",
+                action: actionName,
                 timestamp: new Date().toISOString()
             };
-            // This sends the data back to your Python bot
             tg.sendData(JSON.stringify(data));
+            tg.close();
+        }
+
+        // Function to open your Telegram Channel
+        function joinChannel() {
+            tg.openTelegramLink("https://t.me/nexoraAPP_OWNER");
+        }
+
+        // Function to close the app
+        function closeApp() {
             tg.close();
         }
     </script>
 </body>
-          </html>
+</html>
